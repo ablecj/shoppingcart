@@ -1,1 +1,33 @@
-<h1> cart is empty </h1>
+<section>
+    <div class="container">
+        <table class="table mt-5">
+            <thead>
+                <tr>
+
+                    <th scope="col">Item</th>
+                    <th scope="col">Title</th>
+                    <th scope="col">Quantity</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each products}}
+                <tr>
+                    {{#each this.product}}
+                    <td><img style="width: 70px; height: 70px"
+                            src="/product-images/{{this._id}}.jpg"
+                            alt=""></td>
+                    <td>{{this.Name}}</td>
+                    {{/each}}
+                    <td>
+                        <button class="cart-itme-count mr-3">-</button>{{this.quantity}}<button
+                            class="cart-items-count ml-3">+</button>
+                    </td>
+                    <td>
+                        <a href="" class="btn btn-danger">Remove</a>
+                    </td>
+                </tr>
+                {{/each}}
+            </tbody>
+        </table>
+    </div>
+</section>
