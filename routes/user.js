@@ -16,12 +16,12 @@ const verifyLogin = (req, res, next) => {
 router.get('/', async function (req, res, next) {
   let user = req.session.user
   console.log(user);
-  let cartCount=null
-  if(req.session.user){
-     cartCount= await userHelpers.getCartCount(req.session.user._id)
+  let cartCount = null
+  if (req.session.user) {
+    cartCount = await userHelpers.getCartCount(req.session.user._id)
   }
   productHelper.getAllProducts().then((products) => {
-    res.render('user/view-products', { products, user,cartCount });
+    res.render('user/view-products', { products, user, cartCount });
   })
 });
 
@@ -40,8 +40,8 @@ router.get('/signup', (req, res) => {
 router.post('/signup', (req, res) => {
   userHelpers.doSignup(req.body).then((response) => {
     console.log(response)
-    req.session.loggedIn=true
-    req.session.user=response
+    req.session.loggedIn = true
+    req.session.user = response
     res.redirect('/')
   })
 })
@@ -64,18 +64,24 @@ router.get('/logout', (req, res) => {
   res.redirect('/')
 })
 
-router.get('/cart', verifyLogin,async (req, res) => {
-  let products=await userHelpers.getCartProducts(req.session.user._id)
-  res.render('user/cart',{products,user:req.session.user})
+router.get('/cart', verifyLogin, async (req, res) => {
+  let products = await userHelpers.getCartProducts(req.session.user._id)
+  res.render('user/cart', { products, user: req.session.user })
 })
 
-router.get('/add-to-cart/:id',(req,res)=>{
+router.get('/add-to-cart/:id', (req, res) => {
   console.log("api call");
-  userHelpers.addToCart(req.params.id,req.session.user._id).then(()=>{
-   res.json({status:true})
+  userHelpers.addToCart(req.params.id, req.session.user._id).then(() => {
+    res.json({ status: true })
   })
 })
 
+router.post('/change-product-quantity', (req, res, next) => {
+  console.log(req.body);
+  userHelpers.changeProductQuantity(req.body).then((response) => {
+    res.json(response)
+  })
+})
 
 
 
