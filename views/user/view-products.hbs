@@ -6,13 +6,14 @@
 
         <div class="col-md-3 p-3">
 
-          <div class="card" style="width: 15rem; height: 25rem">
+          <div class="card" style="width: 15rem; height: 27rem">
             <img class="card-img-top" src="/product-images/{{this._id}}.jpg" alt="Card image cap" style="height: 15rem">
             <div class="card-body">
               <h5 class="card-title">{{this.Name}}</h5>
               <p class="card-text">{{this.Description}}</p>
+              <p class="card-text">{{this.Price}} Rs</p>
              
-              <button onclick="addToCart('{{this._id}}')" class="btn btn-primary">Add to cart</button>
+              <button onclick="addToCart('{{this._id}}')" class="btn btn-primary mb-5">Add to cart</button>
             </div>
           </div>
 
