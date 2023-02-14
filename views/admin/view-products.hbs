@@ -1,23 +1,24 @@
 <section>
     <div class="container">
         <div class="row mt-4">
-            <a href="/admin/add-product" class="btn btn-success ml-auto" >Add Product</a>
+            <a href="/admin/add-product" class="btn btn-success ml-auto mb-4" >Add Product</a>
 
         </div>
-        <table class="table mt-5">
+        <table class="table mt-5 " id="productsTable">
   <thead>
     <tr>
-      <th scope="col">NO</th>
+      {{!-- <th scope="col">NO</th> --}}
       <th scope="col">Title</th>
       <th scope="col">Catagory</th>
       <th scope="col">Description</th>
       <th>Image</th>
+      <th>Options</th>
     </tr>
   </thead>
   <tbody>
     {{#each products}}
     <tr>
-      <th scope="row">1</th>
+      {{!-- <th scope="row">1</th> --}}
       <td>{{this.Name}}</td>
       <td>{{this.Catagory}}</td>
       <td>{{this.Description}}</td>
@@ -33,3 +34,11 @@
 </table>
     </div>
 </section>
+
+<script>
+
+  $(document).ready( function () {
+    $('#productsTable').DataTable();
+} );
+
+</script>
