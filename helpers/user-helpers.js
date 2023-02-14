@@ -4,6 +4,12 @@ const bcrypt = require('bcrypt')
 const { response } = require('express')
 const { ObjectID } = require('bson')
 var objectId = require('mongodb').ObjectId
+const Razorpay=require('razorpay')
+var instance = new Razorpay({
+    key_id: 'rzp_test_pKLRENWxgUTNjV',
+    key_secret: 'Odl3MtVlyg1mMYJ44jIHvnyS',
+  });
+
 module.exports = {
     doSignup: (userData) => {
         return new Promise(async (resolve, reject) => {
@@ -223,7 +229,8 @@ module.exports = {
              
             db.get().collection(collection.ORDER_COLLECTION).insertOne(orderObj).then((response)=>{
                 db.get().collection(collection.CART_COLLECTION).deleteOne({user:objectId(order.userId)})
-                resolve()
+                // console.log(response.ops[0]._id);
+                resolve(response.insertedId)
             })
         })
 
@@ -279,6 +286,53 @@ module.exports = {
 
             resolve(orderItems)
         })
+    },
+    generateRazorpay:(orderId,total)=>{
+        return new Promise((resolve,reject)=>{
+         var options = {
+            amount: total*100,
+            currency: "INR",
+            receipt: ""+orderId
+         };
+         instance.orders.create(options, function(err,order){
+            console.log("",order); 
+            resolve(order)
+         });
+
+        })
+    },
+    verifyPayment:(details)=>{
+        return new Promise(async(resolve,reject)=>{
+            const {
+                createHmac,
+              } = await import('node:crypto');
+              
+              let hmac = createHmac('sha256', 'Odl3MtVlyg1mMYJ44jIHvnyS');
+
+              hmac.update(details['payment[razorpay_order_id]']+'|'+details['payment[razorpay_payment_id]']);
+              
+              hmac=hmac.digest('hex')
+              if(hmac==details['payment[razorpay_signature]']){
+                resolve()
+              }else{
+                reject()
+              }
+        })
+    },
+    changePaymentStatus:(orderId)=>{
+      return new Promise((resolve,reject)=>{
+        db.get().collection(collection.ORDER_COLLECTION)
+        .updateOne({_id:objectId(orderId)},
+        
+         {
+            $set:{
+                status:'order placed'
+            }
+         }
+        ).then(()=>{
+            resolve()
+        })
+      })
     }
 
  } 

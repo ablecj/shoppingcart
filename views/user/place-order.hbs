@@ -16,7 +16,7 @@
 
                         <label for="">Mobile</label>
                         <input type="text" class="form-control" id="mobile" name="mobile">
-                        
+
                         <input type="text" name="userId" id="" value="{{user._id}}" hidden>
 
                     </div>
@@ -48,38 +48,94 @@
     </div>
 </section>
 <script>
-    $("#checkout-form").submit((e)=>{
+    $("#checkout-form").submit((e) => {
         e.preventDefault()
         $.ajax({
-            url:'/place-order',
-            method:'post',
-            data:$('#checkout-form').serialize(),
-            success:(response)=>{
+            url: '/place-order',
+            method: 'post',
+            data: $('#checkout-form').serialize(),
+            success: (response) => {
                 alert(response)
-                if(response.status){
-                    
-                    location.href='/order-success'
+                if (response.codSuccess) {
+
+                    location.href = '/order-success'
+                } else {
+                    razorpayPayment(response)
                 }
             }
         })
     })
+
+    function razorpayPayment(order) {
+        var options = {
+            "key": "rzp_test_pKLRENWxgUTNjV", // Enter the Key ID generated from the Dashboard
+            "amount": order.amount, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+            "currency": "INR",
+            "name": "Acme Corp",
+            "description": "Test Transaction",
+            "image": "https://example.com/your_logo",
+            "order_id": order.id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+            "callback_url": "https://eneqd3r9zrjok.x.pipedream.net/",
+            "handler": function (response) {
+                alert(response.razorpay_payment_id);
+                alert(response.razorpay_order_id);
+                alert(response.razorpay_signature);
+
+                verifyPayment(response,order)
+            },
+            "prefill": {
+                "name": "Gaurav Kumar",
+                "email": "gaurav.kumar@example.com",
+                "contact": "9000090000"
+            },
+            "notes": {
+                "address": "Razorpay Corporate Office"
+            },
+            "theme": {
+                "color": "#3399cc"
+            }
+        };
+        var rzp1 = new Razorpay(options);
+        rzp1.open();
+    }
+    function verifyPayment(payment,order){
+        $.ajax({
+            url:'/verify-payment',
+            data:{
+                payment,
+                order
+            },
+            method:'post',
+            success:(response)=>{
+                if(response.status){
+                     location.href = '/order-success'
+                }else{
+                    alert("payment failed")
+                }
+            }
+        })
+    }
+
 </script>
 
 <style>
-    input[type=radio]{
+    input[type=radio] {
         width: 20px;
         height: 20px;
     }
-    label.radio-inline{
+
+    label.radio-inline {
         display: flex;
         align-items: center;
     }
-    .checkout{
+
+    .checkout {
         border: 1px solid;
         border-radius: 3px;
         padding: 30px;
     }
-    .payment{
+
+    .payment {
         padding-bottom: 16px;
     }
 </style>
